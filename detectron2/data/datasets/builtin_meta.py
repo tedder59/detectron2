@@ -188,6 +188,56 @@ KEYPOINT_CONNECTION_RULES = [
 ]
 
 
+TW_CATEGORIES = [
+    {"color": [220, 20, 60], "isthing": 1, "id": 1, "name": "traffic3"},
+    {"color": [119, 11, 32], "isthing": 1, "id": 2, "name": "traffic4"},
+    {"color": [0, 0, 142], "isthing": 1, "id": 3, "name": "traffic3-back"},
+    {"color": [0, 0, 230], "isthing": 1, "id": 4, "name": "traffic4-back"},
+    {"color": [106, 0, 228], "isthing": 1, "id": 5, "name": "circle"},
+    {"color": [0, 60, 100], "isthing": 1, "id": 6, "name": "circle-back"},
+]
+
+TW_KEYPOINT_NAMES = (
+    "left_top", "right_top", "right_bottom", "left_bottom",
+)
+
+TW_KEYPOINT_KEYPOINT_FLIP_MAP = (
+    ("left_top", "right_top"),
+    ("left_bottom", "right_bottom"),
+)
+
+TW_KEYPOINT_CONNECTION_RULES = [
+    ("left_top", "right_top", (255, 128, 0)),
+    ("right_top", "right_bottom", (153, 255, 204)),
+    ("right_bottom", "left_bottom", (128, 229, 255)),
+    ("left_bottom", "left_top", (51, 102, 255)),
+]
+
+
+LANE_CATEGORIES = [
+    {"color": [220, 20, 60], "isthing": 1, "id": 1, "name": "dotted"},
+]
+
+
+LANE_KEYPOINT_NAMES = (
+    "left_top", "right_top", "right_bottom", "left_bottom",
+)
+
+
+LANE_KEYPOINT_KEYPOINT_FLIP_MAP = (
+    ("left_top", "right_top"),
+    ("left_bottom", "right_bottom"),
+)
+
+
+LANE_KEYPOINT_CONNECTION_RULES = [
+    ("left_top", "right_top", (255, 128, 0)),
+    ("right_top", "right_bottom", (153, 255, 204)),
+    ("right_bottom", "left_bottom", (128, 229, 255)),
+    ("left_bottom", "left_top", (51, 102, 255)),
+]
+
+
 def _get_coco_instances_meta():
     thing_ids = [k["id"] for k in COCO_CATEGORIES if k["isthing"] == 1]
     thing_colors = [k["color"] for k in COCO_CATEGORIES if k["isthing"] == 1]
@@ -195,6 +245,36 @@ def _get_coco_instances_meta():
     # Mapping from the incontiguous COCO category id to an id in [0, 79]
     thing_dataset_id_to_contiguous_id = {k: i for i, k in enumerate(thing_ids)}
     thing_classes = [k["name"] for k in COCO_CATEGORIES if k["isthing"] == 1]
+    ret = {
+        "thing_dataset_id_to_contiguous_id": thing_dataset_id_to_contiguous_id,
+        "thing_classes": thing_classes,
+        "thing_colors": thing_colors,
+    }
+    return ret
+
+
+def _get_tw_instances_meta():
+    thing_ids = [k["id"] for k in TW_CATEGORIES if k["isthing"] == 1]
+    thing_colors = [k["color"] for k in TW_CATEGORIES if k["isthing"] == 1]
+    assert len(thing_ids) == 6, len(thing_ids)
+    # Mapping from the incontiguous TW category id to an id in [0, 6]
+    thing_dataset_id_to_contiguous_id = {k: i for i, k in enumerate(thing_ids)}
+    thing_classes = [k["name"] for k in TW_CATEGORIES if k["isthing"] == 1]
+    ret = {
+        "thing_dataset_id_to_contiguous_id": thing_dataset_id_to_contiguous_id,
+        "thing_classes": thing_classes,
+        "thing_colors": thing_colors,
+    }
+    return ret
+
+
+def _get_lane_instances_meta():
+    thing_ids = [k["id"] for k in LANE_CATEGORIES if k["isthing"] == 1]
+    thing_colors = [k["color"] for k in LANE_CATEGORIES if k["isthing"] == 1]
+    assert len(thing_ids) == 1, len(thing_ids)
+    # Mapping from the incontiguous LANE category id to an id in [0, 1]
+    thing_dataset_id_to_contiguous_id = {k: i for i, k in enumerate(thing_ids)}
+    thing_classes = [k["name"] for k in LANE_CATEGORIES if k["isthing"] == 1]
     ret = {
         "thing_dataset_id_to_contiguous_id": thing_dataset_id_to_contiguous_id,
         "thing_classes": thing_classes,
@@ -263,5 +343,23 @@ def _get_builtin_metadata(dataset_name):
         return {
             "thing_classes": CITYSCAPES_THING_CLASSES,
             "stuff_classes": CITYSCAPES_STUFF_CLASSES,
+        }
+    elif dataset_name == "tw":
+        return {
+            "thing_classes": [
+                'traffic3', 'traffic4', 'traffic3-back', 
+                'traffic4-back', 'circle', 'circle-back'],
+            #"keypoint_names": None,
+            "keypoint_names": TW_KEYPOINT_NAMES,
+            "keypoint_flip_map": TW_KEYPOINT_KEYPOINT_FLIP_MAP,
+            "keypoint_connection_rules": TW_KEYPOINT_CONNECTION_RULES,
+        }
+    elif dataset_name == "lane":
+        return {
+            "thing_classes": ["dotted"],
+            #"keypoint_names": None,
+            "keypoint_names": LANE_KEYPOINT_NAMES,
+            "keypoint_flip_map": LANE_KEYPOINT_KEYPOINT_FLIP_MAP,
+            "keypoint_connection_rules": LANE_KEYPOINT_CONNECTION_RULES,
         }
     raise KeyError("No built-in metadata for dataset {}".format(dataset_name))

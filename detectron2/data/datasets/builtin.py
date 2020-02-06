@@ -208,8 +208,63 @@ def register_all_pascal_voc(root="datasets"):
         MetadataCatalog.get(name).evaluator_type = "pascal_voc"
 
 
+# ==== Predefined splits for TW SIGN ===========
+
+_PREDEFINED_SPLITS_TW = {
+    "keypoints_tw_train": (
+        "tw/tw_train",
+        "tw/annotations/keypoints_tw_train.json",
+    ),
+    "keypoints_tw_val": (
+        "tw/tw_val",
+        "tw/annotations/keypoints_tw_val.json",
+    ),
+}
+
+
+def register_all_tw(root="datasets"):
+    for key, (image_root, json_file) in _PREDEFINED_SPLITS_TW.items():
+        register_coco_instances(
+            key,
+            _get_builtin_metadata("tw"),
+            os.path.join(root, json_file) if "://" not in json_file else json_file,
+            os.path.join(root, image_root),
+        )
+        MetadataCatalog.get("tw").thing_classes = ['traffic3', 'traffic4', 'traffic3-back', 'traffic4-back', 'circle', 'circle-back']
+
+
+# ==== Predefined splits for ROAD POINTS ===========
+
+_PREDEFINED_SPLITS_LANE = {
+    "keypoints_lane_train": (
+        "lane/lane_train",
+        "lane/annotations/keypoints_lane_train.json",
+    ),
+    "keypoints_lane_val": (
+        "lane/lane_val",
+        "lane/annotations/keypoints_lane_val.json",
+    ),
+}
+
+
+def register_all_lane(root="datasets"):
+    for key, (image_root, json_file) in _PREDEFINED_SPLITS_LANE.items():
+        register_coco_instances(
+            key,
+            _get_builtin_metadata("lane"),
+            os.path.join(root, json_file) if "://" not in json_file else json_file,
+            os.path.join(root, image_root),
+        )
+        MetadataCatalog.get("lane")
+
+
+
+
+
 # Register them all under "./datasets"
 register_all_coco()
 register_all_lvis()
 register_all_cityscapes()
 register_all_pascal_voc()
+register_all_tw()
+register_all_lane()
